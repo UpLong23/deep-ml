@@ -192,8 +192,23 @@ def impute_missing_data(data: np.ndarray, strategy: str = 'mean') -> np.ndarray:
 
 	return data.T
 
-impute_missing_data(data = [[1.0, 2.0], [3.0, np.nan], [5.0, 6.0]], strategy = 'mode')
 
 
 # %% 
-    
+def entropy_and_cross_entropy(P: list[float], Q: list[float]) -> tuple[float, float]:
+    """
+    https://www.deep-ml.com/problems/205
+    Compute entropy of P and cross-entropy between P and Q.
+
+    Args:
+        P: True probability distribution
+        Q: Predicted probability distribution
+
+    Returns:
+        Tuple of (entropy H(P), cross-entropy H(P,Q))
+    """
+    H =  sum(-p*np.log(p, out=np.zeros_like(p, dtype=np.float64), where=(p!=0)) for p in P)
+    Q =  sum(-P[i]*np.log(Q[i], where=(Q[i]!=0)) for i in range(len(P)))
+    return H, Q
+
+	

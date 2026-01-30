@@ -136,9 +136,10 @@ def feature_scaling(data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return standardized_data, normalized_data
 
 # %%
-def sigmoid(z: float) -> float:
-    result = 1 / (1+np.exp(-z))
-    return result
+def sigmoid(z: float|np.ndarray) -> np.ndarray:
+    z = np.array(z)[None]
+    result = np.array([1 / (1+np.exp(-x)) for x in z])
+    return result.flatten()
 
 # %% 
 def hard_sigmoid(x: float) -> float:
@@ -674,5 +675,57 @@ def k_fold_cross_validation(n_samples: int, k: int = 5, shuffle: bool = True) ->
 
     # Return the list of (train_indices, test_indices) tuples.
     return k_folds
+
+# %%
+def train_neuron(
+    features: np.ndarray,
+    labels: np.ndarray,
+    initial_weights: np.ndarray,
+    initial_bias: float,
+    learning_rate: float,
+    epochs: int
+) -> tuple[np.ndarray, float, list[float]]:
+    
+    weights = np.asarray(initial_weights)
+    bias = np.asarray(initial_bias)[None]
+    features = np.asarray(features)
+    # merge weights and biases into one matrix
+    parameters = np.concatenate((bias, weights))
+    padding = np.ones(features.shape[0])[:, None]
+    features = np.concatenate((padding, features), axis=1)
+
+    z = features @ parameters
+    y_hat = sigmoid(z)
+
+    losses = []
+    
+    for _ in range(epochs):
+        # forward
+        z = features @ parameters
+        y_hat = sigmoid(z)
+        # loss calculation
+        loss = mse(labels, y_hat)
+        losses.append(round(loss, 4))
+        print(loss)
+        # grad calculation
+        delta = 2 * (y_hat - labels) * y_hat * (1 - y_hat)
+        grad = (1/len(labels)) * features.T @ delta
+        # back prop
+        parameters -= learning_rate * grad
+    
+
+    return parameters[1:].round(4), parameters[0].round(4), losses
+
+# %%
+
+features = [[1.0, 2.0], [2.0, 1.0], [-1.0, -2.0]]
+labels = [1, 0, 0]
+initial_weights = [0.1, -0.2]
+initial_bias = 0.0
+learning_rate = 0.1
+epochs = 2
+
+train_neuron(features, labels, initial_weights, initial_bias, learning_rate, epochs)
+
 
 
