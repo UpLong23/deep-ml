@@ -90,6 +90,25 @@ def ridge_loss(
     y_pred = X @ w 
     return mse(y_true, y_pred) + (alpha * sum(w**2))
 
+# %% 
+def hinge_loss(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    """
+    https://www.deep-ml.com/problems/283
+
+    Compute the average hinge loss for SVM classification.
+
+    Args:
+        y_true: Array of true labels (-1 or +1)
+        y_pred: Array of predicted scores (raw SVM scores)
+
+    Returns:
+        Average hinge loss rounded to 4 decimal places
+    """
+    val = np.mean(np.maximum(0, 1-(y_pred*y_true)))
+    return round(val, 4)
+
+
+
 # %%
 def linear_regression_gradient_descent(X: np.ndarray, y: np.ndarray, alpha: float, iterations: int) -> np.ndarray:
     """
@@ -716,16 +735,6 @@ def train_neuron(
 
     return parameters[1:].round(4), parameters[0].round(4), losses
 
-# %%
-
-features = [[1.0, 2.0], [2.0, 1.0], [-1.0, -2.0]]
-labels = [1, 0, 0]
-initial_weights = [0.1, -0.2]
-initial_bias = 0.0
-learning_rate = 0.1
-epochs = 2
-
-train_neuron(features, labels, initial_weights, initial_bias, learning_rate, epochs)
 
 
 

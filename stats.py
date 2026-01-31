@@ -27,7 +27,7 @@ covariance([1,2,3],[-4,-5,-6], sum([1,2,3])/3, sum([-4,-5,-6])/3 )
 	
 # %%
 def calculate_covariance_matrix(
-    vectors: list[list[float]]
+    vectors: list[list[float]]|np.ndarray
 ) -> list[list[float]]:
 	cov_mat = []
 	row_mean_matrix = calculate_matrix_mean(vectors, 'row')

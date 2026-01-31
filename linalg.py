@@ -91,7 +91,7 @@ def reshape_matrix(
 
 # %%
 def calculate_matrix_mean(
-	matrix: list[list[float]],
+	matrix: list[list[float]]|np.ndarray,
     mode: Optional[Literal['row', 'column']] = 'row'
 ) -> list[float]:
     '''
@@ -269,7 +269,89 @@ def svd_2x2_singular_values(A: np.ndarray) -> tuple:
 
     return U, singular_values, V.T
 
+# %%
 
+def svd_2x2(A: np.ndarray) -> tuple:
+    """
+    IT DOESN'T WORK YET
+
+    Compute SVD of a 2x2 matrix.
+
+    Args:
+        A: 2x2 numpy array
+
+    Returns:
+        U: 2x2 orthogonal matrix (left singular vectors)
+        s: 1D array of singular values
+        V: 2x2 orthogonal matrix (right singular vectors)
+    """
+    # compute auxiliary values
+    y1 = A[1,0] + A[0,1]
+    x1 = A[0,0] - A[1,1] 
+    y2 = A[1,0] - A[0,1]
+    x2 = A[0,0] + A[1,1] 
+
+    # compute norms
+    h1 = np.sqrt(x1**2 + y1**2)
+    h2 = np.sqrt(x2**2 + y2**2)
+
+    # compute singular values 
+    sigma1 = (h1 + h2)/2
+    sigma2 = np.abs(h1 - h2)/2
+    s = np.array([sigma1, sigma2])
+
+    # build U from rotation angles
+    # handle h1 or h2 = 0 to avoid division by zero
+    if h1 != 0:
+        c1 = x1 / h1
+    else:
+        c1 = 1
+
+    if h2 != 0:
+        c2 = x2 / h2
+    else:
+        c2 = 1
+    print(c1), print(c2)
+    theta1 = np.arcsin(c1)
+    # Combine rotations to get U
+    rot1 = np.array([
+        [np.cos(theta1), -np.sin(theta1)],
+        [np.sin(theta1), np.cos(theta1)]
+    ])
+    print(rot1)
+    
+    # U = ???????????  
+
+    # Ensure columns are normalized
+    U[:,0] /= np.linalg.norm(U[:,0])
+    U[:,1] = U[:,1] / np.linalg.norm(U[:,1]) if (U[:,1] != 0).all() else U[:,1]
+
+    # compute V using V = Sigma^-1 * U.T * A
+    # handle zero singular values to avoid division by zero
+    V = np.zeros((2,2))
+    for i in range(2):
+        if s[i] > 1e-12:
+            V[:,i] = (U[:,i].T @ A) / s[i]
+        else:
+            # if singular value is zero, choose arbitrary orthogonal vector
+            V[:,i] = np.array([-U[1,i], U[0,i]])
+    
+    # ensure V is orthogonal (normalize columns)
+    V[:,0] /= np.linalg.norm(V[:,0])
+    V[:,1] = V[:,1] / np.linalg.norm(V[:,1]) if (V[:,1] != 0).all() else V[:,1]
+    print(V)
+
+    # verification (optional, can remove in production)
+    # assert np.allclose(A, U @ np.diag(s) @ V.T)
+    # assert np.allclose(U @ U.T, np.identity(2))
+    # assert np.allclose(V @ V.T, np.identity(2))
+    # assert sigma1 >= 0 and sigma2 >= 0
+
+    return U, s, V.T
+
+    
+# %%
+assert (np.arange(10).reshape(2,-1) == np.arange(10).reshape(2,-1)).all()
 # %%
 def lu_decomposition(A: list) -> tuple:
     """
@@ -462,4 +544,3 @@ def is_linearly_independent(vectors: list[list[float]]) -> bool:
             break
 
     return rank == m
-A = np.asarray([], dtype=float)
