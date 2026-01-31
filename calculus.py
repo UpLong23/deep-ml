@@ -265,20 +265,20 @@ def compute_hessian(
     Returns:
         The Hessian matrix as a list of lists (n x n where n = len(point))
     """
-    point = np.asarray(point)
     hessian_matrix = []
 
     for i in range(len(point)):
-        for j in range(i, len(point)):
+        hessian_row = []
+        for j in range(len(point)):
             if i == j:
                 # diagonal 
                 point_tilde_p = point.copy()
                 point_tilde_m = point.copy()
-                point_tilde_p[j] = point_tilde_p[j] + h
-                point_tilde_m[j] = point_tilde_p[j] - h
+                point_tilde_p[i] = point_tilde_p[i] + h
+                point_tilde_m[i] = point_tilde_m[i] - h
 
-                second_partial = (f(point_tilde_p) + f(point_tilde_m) - 2 * f(point)) / h**2
-                hessian_matrix.append(second_partial)
+                second_partial = (f(point_tilde_p) + f(point_tilde_m) - (2 * f(point))) / h**2
+                hessian_row.append(second_partial)
             
             else:
                 # off diagonal
@@ -290,4 +290,35 @@ def compute_hessian(
                 point_tilde_p_p[i] = point_tilde_p_p[i] + h
                 point_tilde_p_p[j] = point_tilde_p_p[j] + h
 
+                point_tilde_p_m[i] = point_tilde_p_m[i] + h
+                point_tilde_p_m[j] = point_tilde_p_m[j] - h
+
+                point_tilde_m_p[i] = point_tilde_m_p[i] - h
+                point_tilde_m_p[j] = point_tilde_m_p[j] + h
+
+                point_tilde_m_m[i] = point_tilde_m_m[i] - h
+                point_tilde_m_m[j] = point_tilde_m_m[j] - h
+
+                second_partial = (f(point_tilde_p_p)+f(point_tilde_m_m)-f(point_tilde_p_m)-f(point_tilde_m_p))/(4*h**2)
+                hessian_row.append(second_partial)
+        hessian_matrix.append(hessian_row)
+    return hessian_matrix
+
+# %%
+def f(p): return p[0]**2 + p[1]**2
+result = compute_hessian(f, [0.0, 0.0])
+print([[round(v, 4) for v in row] for row in result])
+
+
+
+            
+
+
 	
+# %%
+
+point = np.arange(10)
+point[1]= point[1] + 10
+point[3]= point[3] + 100
+
+point

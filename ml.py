@@ -94,7 +94,6 @@ def ridge_loss(
 def hinge_loss(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """
     https://www.deep-ml.com/problems/283
-
     Compute the average hinge loss for SVM classification.
 
     Args:
