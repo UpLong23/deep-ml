@@ -272,7 +272,8 @@ def batch_iterator(X, y=None, batch_size=64):
 
 # %%
 def accuracy_score(y_true, y_pred):
-    return sum(y_true==y_pred) / len(y_true)
+    correct = [y_true[i]==y_pred[i] for i in range(len(y_true))]
+    return sum(correct) / len(y_true)
 
 # %%
 def tp_fp_tn_fn(y_true, y_pred):
