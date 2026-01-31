@@ -1,34 +1,91 @@
-# deep-ml
+A curated collection of foundational **machine learning and mathematics utilities**, examples, and educational content — designed for both learners and practitioners.
 
-> 📚 Solutions to Deep-ML.com problems — written from scratch using at most **NumPy**
-
-This repository contains my personal solutions to coding challenges from **Deep-ML.com** — a machine-learning problem platform often described as *“LeetCode for ML”* where you solve ML, linear algebra, probability, statistics, and deep learning problems by implementing algorithms from the ground up. :contentReference[oaicite:0]{index=0}
-
-All solutions in this repo are implemented with minimal dependencies, using **only NumPy** (no high-level ML libraries like scikit-learn, TensorFlow, or PyTorch) so that you deeply understand the math and mechanics behind the algorithms.
+Deep‑ML provides core implementations of essential algorithms and functions used across machine learning, linear algebra, probability, statistics, and calculus. It can serve as a learning resource, reference library, or starting point for building more advanced ML systems.
 
 ---
 
-## 🧠 What’s Inside
+## 🚀 Features
 
-Each file corresponds to a set of solutions around a topic — many of which mirror Deep-ML.com challenge areas:
-
-| File | Topics Covered |
-|------|----------------|
-| `linalg.py` | Linear algebra utilities (matrix operations, decompositions) |
-| `calculus.py` | Calculus functions (gradients, differentiation utilities) |
-| `prob.py` | Probability problem implementations |
-| `stats.py` | Statistics — distributions, estimators, hypothesis testing |
-| `ml.py` | Core machine learning techniques (e.g., regression, k-NN) |
-| `alexnet.ipynb` | Jupyter Notebook exploring AlexNet from scratch |
-
-> > **Note:** This repo is meant for educational purposes — to explore how core ML concepts work under the hood without relying on specialized frameworks.
+* 📌 **Core Machine Learning Functions** – practical implementations of common ML workflows
+* 📐 **Mathematical Foundations** – modules covering linear algebra, probability, statistics, and calculus
+* 🧠 **Educational Notebooks** – interactive examples (e.g., *alexnet.ipynb*) to explore deep learning concepts
+* 🧩 Easy to read and extend — great for learning, prototyping, and contributions
 
 ---
 
-## 🚀 How to Use
+## 📁 Repository Structure
 
-1. **Clone the repository**
+```
+deep-ml/
+├── calculus.py         # Calculus utility functions
+├── linalg.py           # Linear algebra helper functions
+├── ml.py               # Machine learning algorithms
+├── prob.py             # Probability utilities
+├── stats.py            # Statistical computations
+├── alexnet.ipynb       # Notebook: AlexNet demonstration
+├── __pycache__/        # Compiled Python caches
+└── README.md           # (You are here)
+```
 
-   ```bash
-   git clone https://github.com/UpLong23/deep-ml.git
-   cd deep-ml
+---
+
+## 🧠 Installation
+
+Clone the repository and start using the modules directly in your Python environment:
+
+```bash
+git clone https://github.com/UpLong23/deep-ml.git
+cd deep-ml
+```
+
+You can import the modules in your code:
+
+```python
+from linalg import *
+from ml import *
+```
+
+> You may want to use a virtual environment (venv/conda) for isolation.
+
+---
+
+## 📘 Example Usage
+
+📌 *Import functions from modules:*
+
+```python
+import linalg
+import stats
+import ml
+
+# Example: Compute a matrix transpose
+matrix = [[1, 2], [3, 4]]
+print(linalg.transpose(matrix))
+```
+
+📌 *Run the AlexNet notebook*
+Open **alexnet.ipynb** in Jupyter or VSCode to explore a classic deep learning architecture in practice.
+
+---
+
+## 📚 Recommended Practices
+
+* Use this repo as a **learning reference** before migrating to production‑grade libraries (e.g., NumPy, PyTorch, scikit‑learn).
+* Contribute by improving docstrings, adding tests, or expanding ML implementations.
+* Pair this with platforms like **Deep‑ML.com** for hands‑on practice and challenges. ([GitHub][1])
+
+---
+
+## 🛠 Contributing
+
+Contributions are welcome! Suggested ways to contribute:
+
+* Add new algorithms or utilities
+* Improve documentation and examples
+* Add tests and CI workflows
+* Refactor modules for clarity and performance
+
+Please submit pull requests or open issues to discuss ideas.
+
+
+[1]: https://github.com/Haleshot/Deep-ML?utm_source=chatgpt.com "GitHub - Haleshot/Deep-ML: A platform for deep learning challenges and AI education. Deep-ML is a website dedicated to making deep learning challenges accessible and engaging. It offers a variety of AI-related problems for learners at different skill levels."
