@@ -160,6 +160,21 @@ def sigmoid(z: float|np.ndarray) -> np.ndarray:
     return result.flatten()
 
 # %% 
+def tanh(x: float) -> float:
+    """
+    https://www.deep-ml.com/problems/264
+    Implements the Tanh (hyperbolic tangent) activation function.
+
+    Args:
+        x (float): Input value
+
+    Returns:
+        float: The tanh of the input, rounded to 4 decimal places
+    """
+    val = ((np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))) if x != 0. else 0.
+    return round(val, 4)
+
+# %% 
 def hard_sigmoid(x: float) -> float:
     """
     Implements the Hard Sigmoid activation function.
@@ -736,5 +751,27 @@ def train_neuron(
     return parameters[1:].round(4), parameters[0].round(4), losses
 
 
+# %% 
+def to_categorical(x, n_col=0):
+    '''
+    https://www.deep-ml.com/problems/34
+    One-Hot Encoding of Nominal Values
+    '''
+    b = np.zeros((x.size, x.max() + 1 if (x.max()+1 > n_col) else n_col))
+    b[np.arange(x.size), x] = 1
+        
 
+    return b
+
+# %%
+def divide_on_feature(X, feature_i, threshold):
+    '''
+    https://www.deep-ml.com/problems/31
+    Docstring for divide_on_feature
+    
+    :param X: data
+    :param feature_i: id of feature to apply threshold
+    :param threshold: threshold
+    '''
+    return [X[X[:,0] >= threshold], X[X[:,0] < threshold]]
 

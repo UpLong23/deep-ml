@@ -29,21 +29,24 @@ def batch_normalization(
     Returns:
         Tuple of (normalized_output, updated_running_mean, updated_running_var)
     """
+    _, C, _, _ = X.shape
     if (running_mean is None):
-        running_mean = np.zeros((1,X.shape[1],1,1))
+        running_mean = np.zeros((1,C,1,1))
     if (running_var is None):
-        running_var = np.ones((1,X.shape[1],1,1))
+        running_var = np.ones((1,C,1,1))
 
     if training:
         # calculate statistics
         mean_per_channel = X.mean(axis=(0,2,3), keepdims=True)
-        var_per_channel = X.var(axis=(0,2,3), keepdims=True)
+        var_per_channel = X.var(axis=(0,2,3), keepdims=True, ddof=1)
         # normalize
         X_hat = (X - mean_per_channel) / np.sqrt((var_per_channel+epsilon))
-
+        # print(running_mean)
         running_mean = (momentum * running_mean) + ((1-momentum) * mean_per_channel)
         running_var = (momentum * running_var) + ((1-momentum) * var_per_channel)
-
+        # running_mean = (1 - momentum) * running_mean + momentum * mean_per_channel
+        # running_var  = (1 - momentum) * running_var  + momentum * var_per_channel
+        # print(running_mean)
     else: 
         X_hat = (X - running_mean) /np.sqrt((running_var+epsilon))
 
@@ -60,9 +63,11 @@ np.random.seed(42)
 X = np.random.randn(B, C, H, W) 
 gamma = np.ones(C).reshape(1, C, 1, 1) 
 beta = np.zeros(C).reshape(1, C, 1, 1) 
-running_mean = np.zeros((1, C, 1, 1)) 
-running_var = np.ones((1, C, 1, 1)) 
-output, rm, rv = batch_normalization(X, gamma, beta, running_mean, running_var, momentum=0.1, training=True) 
+# running_mean = np.zeros((1, C, 1, 1)) 
+# running_var = np.ones((1, C, 1, 1)) 
+output, rm, rv = batch_normalization(X, gamma, beta, momentum=0.1, training=True) 
 # print(np.round(output, 5)) 
 print(np.round(rm, 5)) 
 print(np.round(rv, 5))
+
+# %%

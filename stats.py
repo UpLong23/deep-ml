@@ -21,10 +21,6 @@ def covariance(
 	diff_2 = [x-mean_2 for x in vector_2]
 	return sum([x_diff * y_diff for x_diff,y_diff in zip(diff_1, diff_2)]) / (len(vector_1)-1)
 	
-covariance([1,2,3],[-4,-5,-6], sum([1,2,3])/3, sum([-4,-5,-6])/3 )
-	
-
-	
 # %%
 def calculate_covariance_matrix(
     vectors: list[list[float]]|np.ndarray
@@ -211,4 +207,3 @@ def entropy_and_cross_entropy(P: list[float], Q: list[float]) -> tuple[float, fl
     Q =  sum(-P[i]*np.log(Q[i], where=(Q[i]!=0)) for i in range(len(P)))
     return H, Q
 
-	

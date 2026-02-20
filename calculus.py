@@ -1,7 +1,7 @@
 # %%
 import numpy as np
 from typing import Callable
-
+from ml import sigmoid, tanh, softmax
 
 # %%
 def poly_term_derivative(c: float, x: float, n: float) -> float:
@@ -244,11 +244,6 @@ def jacobian_matrix(f, x: list[float], h: float = 1e-5) -> list[list[float]]:
     return np.asarray(jac_matrix).T
 
 # %%
-def f(p): return p[0]**2 + p[1]**2
-
-jacobian_matrix(f, x = [0.0, 0.0])
-
-# %%
 def compute_hessian(
         f: Callable[[list[float]], float],
         point: list[float],
@@ -303,22 +298,144 @@ def compute_hessian(
                 hessian_row.append(second_partial)
         hessian_matrix.append(hessian_row)
     return hessian_matrix
-
-# %%
-def f(p): return p[0]**2 + p[1]**2
-result = compute_hessian(f, [0.0, 0.0])
-print([[round(v, 4) for v in row] for row in result])
-
-
-
-            
-
-
 	
 # %%
+def activation_derivatives(x: float) -> dict[str, float]:
+    """
+    https://www.deep-ml.com/problems/217
+    Compute the derivatives of Sigmoid, Tanh, and ReLU at a given point x.
 
-point = np.arange(10)
-point[1]= point[1] + 10
-point[3]= point[3] + 100
+    Args:
+        x: Input value
+        
+    Returns:
+        Dictionary with keys 'sigmoid', 'tanh', 'relu' and their derivative values
+    """
+    # sigmoid 
+    d_sigmoid = lambda x: sigmoid(x)[0]*(1-sigmoid(x)[0])
+    # tanh
+    d_tanh = lambda x: 1 - tanh(x)**2
+    # relu
+    d_relu = lambda x: 1. if x>0 else 0.
 
-point
+    grads = {
+        'sigmoid': d_sigmoid(x),
+        'tanh':d_tanh(x),
+        'relu':d_relu(x)
+    }
+    return grads
+
+# %%
+def softmax_derivative(x: list[float]) -> list[list[float]]:
+    """
+    https://www.deep-ml.com/problems/219
+    Compute the Jacobian matrix of the softmax function.
+
+    Args:
+        x: Input vector of real numbers
+        
+    Returns:
+        Jacobian matrix J where J[i][j] = d(softmax_i)/d(x_j)
+    """
+    return jacobian_matrix(softmax, x)
+
+# %%
+def cross_entropy_derivative(logits: list[float], target: int) -> list[float]:
+    """
+    https://www.deep-ml.com/problems/220
+    Compute the derivative of cross-entropy loss with respect to logits.
+
+    Args:
+        logits: Raw model outputs (before softmax)
+        target: Index of the true class (0-indexed)
+        
+    Returns:
+        Gradient vector where gradient[i] = dL/d(logits[i])
+    """
+    probs = softmax(logits)
+    probs = np.asarray(probs)
+    y_true = np.zeros_like(probs)
+    y_true[target] = 1
+
+    grad = probs - y_true
+
+    return grad 
+
+cross_entropy_derivative(logits = [1.0, 2.0, 3.0], target = 0)
+
+
+# %%
+class Value:
+    """ 
+    https://www.deep-ml.com/problems/26 
+    """
+    def __init__(self, data, _children=(), _op=''):
+        self.data = data
+        self.grad = 0
+        self._backward = lambda: None
+        self._prev = set(_children)
+        self._op = _op
+
+    def __repr__(self):
+        return f"Value(data={self.data}, grad={self.grad})"
+
+    def __add__(self, other):
+        out = Value(self.data + other.data, (self, other), '+')
+
+        def _backward():
+            self.grad += out.grad
+            other.grad += out.grad
+
+        out._backward = _backward
+        return out
+
+    def __mul__(self, other):
+        out = Value(self.data*other.data, (self, other), '*')
+
+        def _backward():
+            self.grad += out.grad * other.data
+            other.grad += out.grad * self.data
+        out._backward = _backward
+
+        return out
+
+    def relu(self):
+        _relu = lambda x: max(0,x)
+        out = Value(_relu(self.data), (self, ), 'relu')
+
+        def _backward():
+            self.grad += out.grad * 1 if (self.data > 0) else 0
+        out._backward = _backward
+
+        return out
+
+    def backward(self):
+        
+        topo = []
+        visited = set()
+        def build_topo(v):
+            if v not in visited:
+                visited.add(v)
+                for child in v._prev:
+                    build_topo(child)
+                topo.append(v)
+        build_topo(self)
+        
+        self.grad = 1
+        for node in reversed(topo):
+            node._backward()
+
+
+# %%
+a = Value(2)
+b = Value(3)
+c = Value(10)
+d = a + b * c  
+e = Value(7) * Value(2)
+f = e + d
+g = f.relu()  
+g.backward()
+c
+# print(a,b,c,d,e,f,g)
+    
+
