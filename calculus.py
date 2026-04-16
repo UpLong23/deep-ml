@@ -425,17 +425,29 @@ class Value:
         for node in reversed(topo):
             node._backward()
 
-
 # %%
-a = Value(2)
-b = Value(3)
-c = Value(10)
-d = a + b * c  
-e = Value(7) * Value(2)
-f = e + d
-g = f.relu()  
-g.backward()
-c
-# print(a,b,c,d,e,f,g)
+
+def numerical_gradient_check(f, x, analytical_grad, epsilon=1e-7):
+    """
+    https://www.deep-ml.com/problems/313
+    Perform numerical gradient checking using centered finite differences.
     
+    Args:
+        f: A function that takes a numpy array and returns a scalar
+        x: numpy array, the point at which to check gradient
+        analytical_grad: numpy array, the analytically computed gradient
+        epsilon: float, small value for finite difference approximation
+    
+    Returns:
+        tuple: (numerical_grad, relative_error)
+    """
+    numerical_grad = np.zeros(x.shape)
+
+    for idx in range(x.shape[0]):
+        eps_vec = epsilon * np.eye(1, x.shape[0], idx).flatten()
+        numerical_grad[idx] = (f(x+eps_vec) - f(x-eps_vec))  / (2*epsilon)
+    from linalg import norm_2
+
+    relative_error = norm_2(numerical_grad - analytical_grad) / (norm_2(numerical_grad) + norm_2(analytical_grad))
+    return numerical_grad, relative_error
 
